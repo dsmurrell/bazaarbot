@@ -36,6 +36,7 @@ def ob_api_get_sales(session_cookie):
         cookies={SESSION_COOKIE_NAME: session_cookie})
 
     assert r.status_code == 200
+    print r.json()
     return r.json()['sales']
 
 def get_sales():
