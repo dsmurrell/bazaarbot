@@ -43,8 +43,10 @@ class MyClientProtocol(WebSocketClientProtocol):
     def onMessage(self, payload, isBinary):
         if isBinary:
             print("Binary message received: {0} bytes".format(len(payload)))
+            print 'BINARY', json.loads(payload.decode('utf8'))
         else:
             #print("Text message received: {0}".format(payload.decode('utf8')))
+            print 'NOT BINARY', json.loads(payload.decode('utf8'))
             message = json.loads(payload.decode('utf8'))['message']
             self.robot.handle_message(message)
 
