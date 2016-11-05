@@ -39,13 +39,14 @@ class Robot():
         public_key = message['public_key']
         handle = message['handle'] if 'handle' in message else ''
         text = message['message']
+        subject = message['subject']
         print '\'%s\' FROM %s:%s' % (text, guid, handle)
 
         hash = add_file_to_ipfs(mapping['The Weeknd - I Can`t Feel My Face (mp3)'])
         print hash
         notification_text = get_notification_text(hash)
         print 'notification sent back:', notification_text
-        self.mcp.send_message('6ca5a5123fd15fbdabb7eb68dc921985ad695c73', '', 'test notification text', 'e900511690d748878b74fea3ee0a350161f2b04c')
+        self.mcp.send_message(guid, public_key, notification_text, subject)
 
     def handle_notification(self, notification):
         hash = add_file_to_ipfs(mapping[notification['title']])
@@ -74,8 +75,8 @@ class MyClientProtocol(WebSocketClientProtocol):
             d = json.loads(payload.decode('utf8'))
             if 'message' in d:
                 self.robot.handle_message(d['message'])
-            elif 'notification' in d:
-                self.robot.handle_notification(d['notification'])
+            # elif 'notification' in d:
+            #     self.robot.handle_notification(d['notification'])
 
     def onClose(self, wasClean, code, reason):
         print("WebSocket connection closed: {0}".format(reason))
