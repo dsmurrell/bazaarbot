@@ -7,7 +7,6 @@ import time
 from fabric.api import *
 from twisted.python import log
 from twisted.internet import reactor, defer, threads
-from pymongo import MongoClient
 from secrets.secrets import secrets
 from autobahn.twisted.websocket import WebSocketClientProtocol, WebSocketClientFactory
 from subprocess import check_call, PIPE
