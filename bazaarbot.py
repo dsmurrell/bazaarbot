@@ -22,8 +22,7 @@ def connect_to_ipfs():
 def add_file_to_ipfs(file):
     api = connect_to_ipfs()
     res = api.add(file)
-    print res
-    return res[1]["Hash"]
+    return res["Hash"]
 
 def get_notification_text(hash):
     return "Dear customer, thanks for the purchase you can download your song now at: https://gateway.ipfs.io/ipfs/%s"  % hash
