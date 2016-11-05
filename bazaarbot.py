@@ -50,7 +50,7 @@ class Robot():
         print 'notification sent back:', notification_text
         self.mcp.send_message(guid, public_key, notification_text, subject)
 
-        print get_profile(guid)
+        #print get_profile(guid)
 
     def handle_notification(self, notification):
         hash = add_file_to_ipfs(mapping[notification['title']])
