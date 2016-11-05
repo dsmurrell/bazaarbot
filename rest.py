@@ -39,7 +39,16 @@ def ob_api_get_sales(session_cookie):
     print r.json()
     return r.json()['sales']
 
-def get_sales():
+def ob_api_get_profile(session_cookie, guid):
+    r = requests.get(
+        (u'{}{}get_profile/%s' % guid).format(OB_HOST, OB_API_PREFIX),
+        cookies={SESSION_COOKIE_NAME: session_cookie})
+
+    assert r.status_code == 200
+    print r.json()
+    #return r.json()['sales']
+
+def get_profile(guid):
     session_cookie = ob_api_login()
-    sales = ob_api_get_sales(session_cookie)
-    return sales
+    public_key = ob_api_get_profile(session_cookie)
+    #return sales
