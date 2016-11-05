@@ -25,7 +25,7 @@ def add_file_to_ipfs(file):
     return res["Hash"]
 
 def get_notification_text(hash):
-    return "Dear customer, thanks for the purchase you can download your song <a href='https://gateway.ipfs.io/ipfs/%s'>here</a>."  % hash
+    return "Dear customer, thanks for the purchase. <p> you can download your file <a href='https://gateway.ipfs.io/ipfs/%s'>here</a>."  % hash
 
 class Robot():
 
