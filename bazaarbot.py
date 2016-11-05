@@ -84,6 +84,8 @@ class MyClientProtocol(WebSocketClientProtocol):
         res = api.add(file)
         return res[1]["Hash"]
 
+    def get_notification_text(hash):
+        return "Dear customer, thanks for the purchase you can download your song now at: https://gateway.ipfs.io/ipfs/%s"  % hash
 
 
 ip_port = secrets['ob_ip'] + ':' + secrets['ob_port']
