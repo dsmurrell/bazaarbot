@@ -17,7 +17,7 @@ class Robot():
     def __init__(self, mcp):
         self.mcp = mcp
 
-    def echo(self, guid, public_key, text)
+    def echo(self, guid, public_key, text):
         self.mcp.send_message(guid, public_key, response)
 
     def handle_message(self, message):
