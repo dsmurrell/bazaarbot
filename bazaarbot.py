@@ -12,13 +12,25 @@ from secrets.secrets import secrets
 from autobahn.twisted.websocket import WebSocketClientProtocol, WebSocketClientFactory
 from subprocess import check_call, PIPE
 
+mapping = {
+    'The Weeknd - I Can`t Feel My Face (mp3)': 'weekend.mp3',
+}
+
+def connect_to_ipfs():
+    return ipfsapi.connect('127.0.0.1', 5001)
+
+def add_file_to_ipfs(file):
+    api = connect_to_ipfs()
+    res = api.add(file)
+    return res[1]["Hash"]
+
+def get_notification_text(hash):
+    return "Dear customer, thanks for the purchase you can download your song now at: https://gateway.ipfs.io/ipfs/%s"  % hash
+
 class Robot():
 
     def __init__(self, mcp):
         self.mcp = mcp
-
-    def echo(self, guid, public_key, text):
-        self.mcp.send_message(guid, public_key, response)
 
     def handle_message(self, message):
         print message
@@ -28,6 +40,16 @@ class Robot():
         handle = message['handle'] if 'handle' in message else ''
         text = message['message']
         print '\'%s\' FROM %s:%s' % (text, guid, handle)
+
+        hash = add_file_to_ipfs(mapping['The Weeknd - I Can`t Feel My Face (mp3)'])
+        notification_text = get_notification_text(hash)
+        self.mcp.send_message('6ca5a5123fd15fbdabb7eb68dc921985ad695c73', '', 'test notification text', 'e900511690d748878b74fea3ee0a350161f2b04c')
+        print 'sent message back'
+
+    def handle_notification(self, notification):
+        hash = add_file_to_ipfs(mapping[notification['title']])
+        notification_text = get_notification_text(hash)
+        self.mcp.send_message(guid, public_key, notification_text, notification['order_id'])
 
 class MyClientProtocol(WebSocketClientProtocol):
 
@@ -48,8 +70,11 @@ class MyClientProtocol(WebSocketClientProtocol):
         else:
             #print("Text message received: {0}".format(payload.decode('utf8')))
             print 'NOT BINARY', json.loads(payload.decode('utf8'))
-            message = json.loads(payload.decode('utf8'))['message']
-            self.robot.handle_message(message)
+            d = json.loads(payload.decode('utf8'))
+            if 'message' in d:
+                self.robot.handle_message(d['message'])
+            elif 'notification' in d:
+                self.robot.handle_notification(d['notification'])
 
     def onClose(self, wasClean, code, reason):
         print("WebSocket connection closed: {0}".format(reason))
@@ -62,7 +87,7 @@ class MyClientProtocol(WebSocketClientProtocol):
             time.sleep(1)
         connect(session_cookie)
 
-    def send_message(self, guid, public_key, message):
+    def send_message(self, guid, public_key, message, contract_id=''):
         print '\'%s\' TO %s' % (message.splitlines()[0], guid)
         payload = { 
                        "request": {
@@ -71,24 +96,12 @@ class MyClientProtocol(WebSocketClientProtocol):
                            "guid": guid,
                            "handle": "@autobazaar",
                            "message": message,
-                           "subject": "",
+                           "subject": contract_id,
                            "message_type": "CHAT",
                            "public_key": public_key,
                        }
                     }
         self.sendMessage(json.dumps(payload))
-
-    def connect_to_ipfs():
-        return ipfsapi.connect('127.0.0.1', 5001)
-
-    def add_file_to_ipfs(file):
-        api = connect_to_ipfs()
-        res = api.add(file)
-        return res[1]["Hash"]
-
-    def get_notification_text(hash):
-        return "Dear customer, thanks for the purchase you can download your song now at: https://gateway.ipfs.io/ipfs/%s"  % hash
-
 
 ip_port = secrets['ob_ip'] + ':' + secrets['ob_port']
 ip_port_ws = secrets['ob_ip'] + ':' + secrets['ob_port_ws']
