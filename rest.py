@@ -41,7 +41,7 @@ def ob_api_get_sales(session_cookie):
 
 def ob_api_get_profile(session_cookie, guid):
     r = requests.get(
-        (u'{}{}get_profile/%s' % guid).format(OB_HOST, OB_API_PREFIX),
+        (u'{}{}get_profile/'+ guid).format(OB_HOST, OB_API_PREFIX),
         cookies={SESSION_COOKIE_NAME: session_cookie})
 
     assert r.status_code == 200
