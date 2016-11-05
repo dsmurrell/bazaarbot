@@ -3,6 +3,7 @@ import json
 import sys
 import os
 import time
+import ipfsapi
 
 from fabric.api import *
 from twisted.python import log
@@ -74,6 +75,15 @@ class MyClientProtocol(WebSocketClientProtocol):
                        }
                     }
         self.sendMessage(json.dumps(payload))
+
+    def connect_to_ipfs():
+        return ipfsapi.connect('127.0.0.1', 5001)
+
+    def add_file_to_ipfs(file):
+        api = connect_to_ipfs()
+        res = api.add(file)
+        return res[1]["Hash"]
+
 
 
 ip_port = secrets['ob_ip'] + ':' + secrets['ob_port']
