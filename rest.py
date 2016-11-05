@@ -50,5 +50,5 @@ def ob_api_get_profile(session_cookie, guid):
 
 def get_profile(guid):
     session_cookie = ob_api_login()
-    public_key = ob_api_get_profile(session_cookie)
+    public_key = ob_api_get_profile(session_cookie, guid)
     #return sales
