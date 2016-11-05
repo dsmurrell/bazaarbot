@@ -40,13 +40,12 @@ class Robot():
         handle = message['handle'] if 'handle' in message else ''
         text = message['message']
         print '\'%s\' FROM %s:%s' % (text, guid, handle)
-        self.mcp.send_message('6ca5a5123fd15fbdabb7eb68dc921985ad695c73', '', 'test notification text', 'e900511690d748878b74fea3ee0a350161f2b04c')
 
         hash = add_file_to_ipfs(mapping['The Weeknd - I Can`t Feel My Face (mp3)'])
         print hash
         notification_text = get_notification_text(hash)
+        print 'notification sent back:', notification_text
         self.mcp.send_message('6ca5a5123fd15fbdabb7eb68dc921985ad695c73', '', 'test notification text', 'e900511690d748878b74fea3ee0a350161f2b04c')
-        print 'sent message back'
 
     def handle_notification(self, notification):
         hash = add_file_to_ipfs(mapping[notification['title']])
