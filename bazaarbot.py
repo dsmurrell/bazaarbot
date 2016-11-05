@@ -5,6 +5,8 @@ import os
 import time
 import ipfsapi
 
+from rest import get_sales
+
 from fabric.api import *
 from twisted.python import log
 from twisted.internet import reactor, defer, threads
@@ -47,6 +49,8 @@ class Robot():
         notification_text = get_notification_text(hash)
         print 'notification sent back:', notification_text
         self.mcp.send_message(guid, public_key, notification_text, subject)
+
+        print get_sales()
 
     def handle_notification(self, notification):
         hash = add_file_to_ipfs(mapping[notification['title']])
