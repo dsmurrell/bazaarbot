@@ -27,7 +27,7 @@ def ob_api_get_listings(session_cookie):
         u'{}{}get_listings'.format(OB_HOST, OB_API_PREFIX),
         cookies={SESSION_COOKIE_NAME: session_cookie})
 
-    assert r.status_code == 200
+    assert r.status_code == 200 
     return r.json()['listings']
 
 def ob_api_get_sales(session_cookie):
@@ -36,6 +36,7 @@ def ob_api_get_sales(session_cookie):
         cookies={SESSION_COOKIE_NAME: session_cookie})
 
     assert r.status_code == 200
+    print r.json()
     return r.json()['sales']
 
 def get_sales():
