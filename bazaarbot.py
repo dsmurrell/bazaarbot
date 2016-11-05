@@ -5,7 +5,7 @@ import os
 import time
 import ipfsapi
 
-from rest import get_sales
+from rest import get_profile
 
 from fabric.api import *
 from twisted.python import log
