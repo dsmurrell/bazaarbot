@@ -13,7 +13,7 @@ from autobahn.twisted.websocket import WebSocketClientProtocol, WebSocketClientF
 from subprocess import check_call, PIPE
 
 mapping = {
-    'The Weeknd - I Can`t Feel My Face (mp3)': 'weekend.mp3',
+    'The Weeknd - I Can`t Feel My Face (mp3)': 'files/weekend.mp3',
 }
 
 def connect_to_ipfs():
