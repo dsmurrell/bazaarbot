@@ -44,10 +44,14 @@ class Robot():
         # self.mcp.send_message(guid, public_key, 'yoyoyo', contract_id=subject, message_type='ORDER')
 
     def handle_notification(self, notification):
+        print notification
         title = notification['title']
+        print title
         if title in mapping:
+            print 'title in mapping'
             hash = add_file_to_ipfs(mapping[notification['title']])
             public_key = ob_api_get_profile(session_cookie, OB_HOST, OB_API_PREFIX, SESSION_COOKIE_NAME, guid)
+            print 'public key'
             self.mcp.send_message(guid, public_key, get_notification_text(hash), notification['order_id'], 'ORDER')
         else:
             self.mcp.send_message(guid, public_key, get_error_text(), notification['order_id'], 'ORDER')
