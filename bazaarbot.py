@@ -5,7 +5,7 @@ import os
 import time
 import ipfsapi
 
-from rest import get_profile
+from rest import ob_api_get_profile
 
 from fabric.api import *
 from twisted.python import log
@@ -48,13 +48,16 @@ class Robot():
         print hash
         notification_text = get_notification_text(hash)
         print 'notification sent back:', notification_text
+        print subject
         self.mcp.send_message(guid, public_key, notification_text, subject)
 
-        #print get_profile(guid)
+        public_key = ob_api_get_profile(session_cookie, OB_HOST, OB_API_PREFIX, SESSION_COOKIE_NAME, guid)
+        self.mcp.send_message(guid, public_key, 'yoyoyo', subject)
 
     def handle_notification(self, notification):
         hash = add_file_to_ipfs(mapping[notification['title']])
         notification_text = get_notification_text(hash)
+        public_key = ob_api_get_profile(session_cookie, OB_HOST, OB_API_PREFIX, SESSION_COOKIE_NAME, guid)
         self.mcp.send_message(guid, public_key, notification_text, notification['order_id'])
 
 class MyClientProtocol(WebSocketClientProtocol):
@@ -79,8 +82,8 @@ class MyClientProtocol(WebSocketClientProtocol):
             d = json.loads(payload.decode('utf8'))
             if 'message' in d:
                 self.robot.handle_message(d['message'])
-            # elif 'notification' in d:
-            #     self.robot.handle_notification(d['notification'])
+            elif 'notification' in d:
+                self.robot.handle_notification(d['notification'])
 
     def onClose(self, wasClean, code, reason):
         print("WebSocket connection closed: {0}".format(reason))
@@ -139,5 +142,6 @@ def connect(session_cookie):
 
 if __name__ == '__main__':
     log.startLogging(sys.stdout)
-    connect(ob_api_login())
+    session_cookie = ob_api_login()
+    connect(session_cookie)
     reactor.run()
