@@ -50,8 +50,7 @@ class Robot():
         #print subject
         #self.mcp.send_message(guid, public_key, notification_text, subject, 'CHAT')
 
-        public_key = ob_api_get_profile(session_cookie, OB_HOST, OB_API_PREFIX, SESSION_COOKIE_NAME, guid)
-        print public_key
+        public_key = ob_api_get_profile(session_cookie, OB_HOST, OB_API_PREFIX, SESSION_COOKIE_NAME, guid)['public_key']
         self.mcp.send_message(guid, public_key, 'yoyoyo', contract_id=subject, message_type='ORDER')
 
     def handle_notification(self, notification):
