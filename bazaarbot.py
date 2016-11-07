@@ -35,8 +35,6 @@ class Robot():
         self.mcp = mcp
 
     def handle_message(self, message):
-        print message
-
         guid = message['sender']
         public_key = message['public_key']
         handle = message['handle'] if 'handle' in message else ''
@@ -52,7 +50,7 @@ class Robot():
         #self.mcp.send_message(guid, public_key, notification_text, subject, 'CHAT')
 
         public_key = ob_api_get_profile(session_cookie, OB_HOST, OB_API_PREFIX, SESSION_COOKIE_NAME, guid)
-        self.mcp.send_message(guid, public_key, 'yoyoyo', subject, 'ORDER')
+        self.mcp.send_message(guid, public_key, 'yoyoyo', contract_id=subject, message_type='ORDER')
 
     def handle_notification(self, notification):
         title = notification['title']
@@ -82,10 +80,8 @@ class MyClientProtocol(WebSocketClientProtocol):
             print("Binary message received: {0} bytes".format(len(payload)))
             print 'BINARY', json.loads(payload.decode('utf8'))
         else:
-            #print("Text message received: {0}".format(payload.decode('utf8')))
             print 'NOT BINARY', json.loads(payload.decode('utf8'))
             d = json.loads(payload.decode('utf8'))
-            print d
             if 'message' in d:
                 self.robot.handle_message(d['message'])
             elif 'notification' in d:
