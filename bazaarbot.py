@@ -5,8 +5,6 @@ import os
 import time
 import ipfsapi
 
-from rest import ob_api_get_profile
-
 from fabric.api import *
 from twisted.python import log
 from twisted.internet import reactor, defer, threads
@@ -14,9 +12,7 @@ from secrets.secrets import secrets
 from autobahn.twisted.websocket import WebSocketClientProtocol, WebSocketClientFactory
 from subprocess import check_call, PIPE
 
-mapping = {
-    'The Weeknd - I Can`t Feel My Face (mp3)': 'files/weekend.mp3',
-}
+from custom import mapping, get_notification_text, get_error_text
 
 def connect_to_ipfs():
     return ipfsapi.connect('127.0.0.1', 5001)
@@ -26,43 +22,35 @@ def add_file_to_ipfs(file):
     res = api.add(file)
     return res["Hash"]
 
-def get_notification_text(hash):
-    return "Dear customer, thanks for the purchase. <p> You can download your file <a href='https://gateway.ipfs.io/ipfs/%s'>here</a>."  % hash
-
 class Robot():
 
     def __init__(self, mcp):
         self.mcp = mcp
 
     def handle_message(self, message):
-        guid = message['sender']
-        public_key = message['public_key']
-        print public_key
-        handle = message['handle'] if 'handle' in message else ''
-        text = message['message']
-        subject = message['subject']
-        print '\'%s\' FROM %s:%s' % (text, guid, handle)
+        pass
+        # TESTING CODE
+        # guid = message['sender']
+        # public_key = message['public_key']
+        # handle = message['handle'] if 'handle' in message else ''
+        # text = message['message']
+        # subject = message['subject']
+        # print '\'%s\' FROM %s:%s' % (text, guid, handle)
 
-        hash = add_file_to_ipfs(mapping['The Weeknd - I Can`t Feel My Face (mp3)'])
-        #print hash
-        notification_text = get_notification_text(hash)
-        #print 'notification sent back:', notification_text
-        #print subject
-        #self.mcp.send_message(guid, public_key, notification_text, subject, 'CHAT')
+        # hash = add_file_to_ipfs(mapping['The Weeknd - I Can`t Feel My Face (mp3)'])
+        # notification_text = get_notification_text(hash)
 
-        public_key = ob_api_get_profile(session_cookie, OB_HOST, OB_API_PREFIX, SESSION_COOKIE_NAME, guid)['public_key']
-        self.mcp.send_message(guid, public_key, 'yoyoyo', contract_id=subject, message_type='ORDER')
+        # public_key = ob_api_get_profile(session_cookie, OB_HOST, OB_API_PREFIX, SESSION_COOKIE_NAME, guid)['public_key']
+        # self.mcp.send_message(guid, public_key, 'yoyoyo', contract_id=subject, message_type='ORDER')
 
     def handle_notification(self, notification):
         title = notification['title']
         if title in mapping:
             hash = add_file_to_ipfs(mapping[notification['title']])
-            notification_text = get_notification_text(hash)
             public_key = ob_api_get_profile(session_cookie, OB_HOST, OB_API_PREFIX, SESSION_COOKIE_NAME, guid)
-            self.mcp.send_message(guid, public_key, notification_text, notification['order_id'], 'ORDER')
+            self.mcp.send_message(guid, public_key, get_notification_text(hash), notification['order_id'], 'ORDER')
         else:
-            self.mcp.send_message(guid, public_key, notification_text, notification['order_id'], 'ORDER')
-
+            self.mcp.send_message(guid, public_key, get_error_text(), notification['order_id'], 'ORDER')
 
 class MyClientProtocol(WebSocketClientProtocol):
 
@@ -134,6 +122,13 @@ def ob_api_login():
         return None 
 
     return r.cookies[SESSION_COOKIE_NAME]
+
+def ob_api_get_profile(session_cookie, OB_HOST, OB_API_PREFIX, SESSION_COOKIE_NAME, guid):
+    url = u'{}{}profile?guid={}'.format(OB_HOST, OB_API_PREFIX, guid)
+    r = requests.get(url, cookies={SESSION_COOKIE_NAME: session_cookie})
+
+    assert r.status_code == 200
+    return r.json()['profile']
 
 def connect(session_cookie):
     headers = {'Cookie': 'TWISTED_SESSION=' + session_cookie}
