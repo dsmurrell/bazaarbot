@@ -80,6 +80,7 @@ class MyClientProtocol(WebSocketClientProtocol):
             #print("Text message received: {0}".format(payload.decode('utf8')))
             print 'NOT BINARY', json.loads(payload.decode('utf8'))
             d = json.loads(payload.decode('utf8'))
+            print d
             if 'message' in d:
                 self.robot.handle_message(d['message'])
             elif 'notification' in d:
