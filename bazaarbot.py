@@ -45,20 +45,25 @@ class Robot():
         print '\'%s\' FROM %s:%s' % (text, guid, handle)
 
         hash = add_file_to_ipfs(mapping['The Weeknd - I Can`t Feel My Face (mp3)'])
-        print hash
+        #print hash
         notification_text = get_notification_text(hash)
-        print 'notification sent back:', notification_text
-        print subject
-        self.mcp.send_message(guid, public_key, notification_text, subject)
+        #print 'notification sent back:', notification_text
+        #print subject
+        #self.mcp.send_message(guid, public_key, notification_text, subject, 'CHAT')
 
         public_key = ob_api_get_profile(session_cookie, OB_HOST, OB_API_PREFIX, SESSION_COOKIE_NAME, guid)
-        self.mcp.send_message(guid, public_key, 'yoyoyo', subject)
+        self.mcp.send_message(guid, public_key, 'yoyoyo', subject, 'ORDER')
 
     def handle_notification(self, notification):
-        hash = add_file_to_ipfs(mapping[notification['title']])
-        notification_text = get_notification_text(hash)
-        public_key = ob_api_get_profile(session_cookie, OB_HOST, OB_API_PREFIX, SESSION_COOKIE_NAME, guid)
-        self.mcp.send_message(guid, public_key, notification_text, notification['order_id'])
+        title = notification['title']
+        if title in mapping:
+            hash = add_file_to_ipfs(mapping[notification['title']])
+            notification_text = get_notification_text(hash)
+            public_key = ob_api_get_profile(session_cookie, OB_HOST, OB_API_PREFIX, SESSION_COOKIE_NAME, guid)
+            self.mcp.send_message(guid, public_key, notification_text, notification['order_id'], 'ORDER')
+        else:
+            self.mcp.send_message(guid, public_key, notification_text, notification['order_id'], 'ORDER')
+
 
 class MyClientProtocol(WebSocketClientProtocol):
 
@@ -97,7 +102,7 @@ class MyClientProtocol(WebSocketClientProtocol):
             time.sleep(1)
         connect(session_cookie)
 
-    def send_message(self, guid, public_key, message, contract_id=''):
+    def send_message(self, guid, public_key, message, contract_id='', message_type='CHAT'):
         print '\'%s\' TO %s' % (message.splitlines()[0], guid)
         payload = { 
                        "request": {
@@ -107,7 +112,7 @@ class MyClientProtocol(WebSocketClientProtocol):
                            "handle": "@autobazaar",
                            "message": message,
                            "subject": contract_id,
-                           "message_type": "CHAT",
+                           "message_type": message_type,
                            "public_key": public_key,
                        }
                     }
