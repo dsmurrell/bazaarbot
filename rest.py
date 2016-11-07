@@ -36,21 +36,26 @@ def ob_api_get_sales(session_cookie):
         cookies={SESSION_COOKIE_NAME: session_cookie})
 
     assert r.status_code == 200
-    print r.json()
     return r.json()['sales']
 
 def ob_api_get_profile(session_cookie, guid):
     r = requests.get(
-        (u'{}{}get_profile?guid='+ guid).format(OB_HOST, OB_API_PREFIX),
+        u'{}{}profile?guid={}'.format(OB_HOST, OB_API_PREFIX, guid),
         cookies={SESSION_COOKIE_NAME: session_cookie})
 
     assert r.status_code == 200
-    print r.json()
-    #return r.json()['sales']
+    return r.json()['profile']
 
-def get_profile(guid):
+def get_public_key(guid):
     session_cookie = ob_api_login()
-    public_key = ob_api_get_profile(session_cookie, guid)
-    #return sales
+    profile = ob_api_get_profile(session_cookie, guid)
+    return profile['public_key']
 
-get_profile('6ca5a5123fd15fbdabb7eb68dc921985ad695c73')
+# TESTING
+#session_cookie = ob_api_login()
+#print ob_api_get_listings(session_cookie)
+
+#session_cookie = ob_api_login()
+#print ob_api_get_profile(session_cookie, '6ca5a5123fd15fbdabb7eb68dc921985ad695c73')
+
+#print get_public_key('6ca5a5123fd15fbdabb7eb68dc921985ad695c73')
